@@ -255,18 +255,7 @@ export function useMentions(
       if (isArchivedDiscovery(pubkey)) {
         return;
       }
-<<<<<<< HEAD
-      // Invocable relay agents (NIP-OA-owned, respond_to/channel_ids in their
-      // kind:10100) must survive the managed-list filter — otherwise
-      // shouldHideAgentFromMentions's "invocable => always show" rule below is
-      // unreachable for agents managed outside this desktop.
-      if (
-        !isAgentIdentityInManagedList(candidate, managedAgentPubkeys) &&
-        !mentionableAgentPubkeys.has(pubkey)
-      ) {
-=======
       if (!isAgentIdentityInAllowedList(candidate, mentionableAgentPubkeys)) {
->>>>>>> upstream/main
         return;
       }
       if (
