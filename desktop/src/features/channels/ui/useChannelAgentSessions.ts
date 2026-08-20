@@ -154,6 +154,24 @@ export function getChannelAgentSessionAgents({
       return true;
     }
 
+    // A DM roster can never satisfy the declared-channel check: relay agents
+    // declare their bot-role channels, and DM participants always hold the
+    // plain member role (the relay hardcodes it at DM creation and no DM
+    // member is elevated enough to change it). Falling through to the
+    // no-declared-scope membership test below would therefore exclude a relay
+    // agent from every DM it participates in, hiding its live activity behind
+    // the human typing row. Membership itself is the authoritative signal for
+    // DMs, with the channel's participant roster covering the window before
+    // the members query resolves.
+    if (activeChannel.channelType === "dm") {
+      if (memberPubkeys) {
+        return memberPubkeys.has(normalizedPubkey);
+      }
+      return activeChannel.participantPubkeys.some(
+        (pubkey) => normalizePubkey(pubkey) === normalizedPubkey,
+      );
+    }
+
     return (
       !hasDeclaredChannelScope && Boolean(memberPubkeys?.has(normalizedPubkey))
     );
